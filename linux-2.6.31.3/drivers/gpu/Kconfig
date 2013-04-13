@@ -1,0 +1,13 @@
+#
+# VIVANTE_GPU support
+#
+
+menuconfig	GPU
+	tristate "GPU SUPPORT"
+	depends on JZSOC
+
+if GPU
+
+source "drivers/gpu/vivante/Kconfig"
+
+endif # GPU

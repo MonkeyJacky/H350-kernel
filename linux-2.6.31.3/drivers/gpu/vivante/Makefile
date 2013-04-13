@@ -1,0 +1,1 @@
+obj-$(CONFIG_VIVANTE_GPU_GC860)			+= VIVANTE_GAL_Unified_Src_drv_2010.2.5/

@@ -1,0 +1,19 @@
+#
+# VIVANTE_GPU support
+#
+comment "VIVANTE GPU 2D OR 3D Drivers"
+
+config	VIVANTE_GPU_GC200
+	tristate "VIVANTE_GPU_GC200"
+	depends on (SOC_JZ4760 || SOC_JZ4760B)
+	default n
+	help
+	  VIVANTE_GPU_GC200
+
+config VIVANTE_GPU_GC860
+	tristate "VIVANTE_GPU_GC860"
+	depends on SOC_JZ4770
+	default n
+	help
+	  VIVANTE_GPU_GC860
+
