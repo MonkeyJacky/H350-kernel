@@ -145,6 +145,7 @@ static int hp_in;
 static unsigned int sound_flag = 0;  //default the amp is off
 static struct timer_list hp_irq_timer;
 static unsigned int crypt_flag = 0;
+static int fm_enable;
 extern void crypt_reset();
 
 static int proc_amp_read_proc(
@@ -165,8 +166,16 @@ static int proc_hp_write_proc(
 			struct file *file, const char *buffer,
 			unsigned long count, void *data)
 {
+    fm_enable =  simple_strtoul(buffer, 0, 10);
+    printk("fm enable is %d\n",fm_enable);
 
-  return count;
+    if(fm_enable){
+	__gpio_clear_pin(GPIO_FM_EN);
+    }else{
+	__gpio_set_pin(GPIO_FM_EN);
+    }
+
+    return count;
 }
 
 #ifdef CRYPT_CHECK

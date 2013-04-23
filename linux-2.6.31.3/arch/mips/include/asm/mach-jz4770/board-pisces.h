@@ -97,6 +97,7 @@
 #define H350_KEY_SELECT_ACTIVELOW 0
 
 
+#define GPIO_FM_EN (32*4+3)
 #define GPIO_AMPEN (32*5+20)
 #define GPIO_HP_PIN     (32*5+21)
 #define GPIO_HP_OFF  (32*5+3)
