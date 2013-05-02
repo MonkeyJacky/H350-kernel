@@ -512,9 +512,10 @@ unsigned short jz_read_aux(int index)
 #define LEFT_KEY_0 0x04
 #define RIGHT_KEY_0 0x08
 
-#define MAX_VALUE 4096
-#define MID_VALUE 2048
-#define ADJUST_VALUE 800
+#define ADJUST_VALUE 500
+#define ORIGIN_COORDINATES 1600
+#define ADJUST_COORDINATES_MAX (ORIGIN_COORDINATES + ADJUST_VALUE)
+#define ADJUST_COORDINATES_MIN (ORIGIN_COORDINATES - ADJUST_VALUE)
 
 
 //maddrone add
@@ -591,38 +592,38 @@ static void jz_cal_ts_data(unsigned int value)
 
 	tsdata_x = value & 0xfff;
 	tsdata_y = (value & 0xfff0000) >> 16;
-	//printk("\n medive printk : tsdata_x = %d tsdata_y = %d \n",tsdata_x,tsdata_y);
+	/*printk("\n medive printk : tsdata_x = %d tsdata_y = %d \n",tsdata_x,tsdata_y);*/
 		
-	if (((tsdata_x > (MAX_VALUE-ADJUST_VALUE)) && (tsdata_x < (MAX_VALUE)))  &&  (tsdata_y >= 0 && tsdata_y < ADJUST_VALUE ))
+	if (tsdata_x > ADJUST_COORDINATES_MAX && tsdata_y < ADJUST_COORDINATES_MIN)
 	{
-		//printk("\n up   left   \n");
-		val |= 	UP_KEY_0 | LEFT_KEY_0;
-	} else if (((tsdata_x > (MAX_VALUE-ADJUST_VALUE)) && (tsdata_x < (MAX_VALUE)))  &&  (tsdata_y >= (MAX_VALUE - ADJUST_VALUE) && tsdata_y < MAX_VALUE ))
+	    //printk("\n up   left   \n");
+	    val |= 	UP_KEY_0 | LEFT_KEY_0;
+	} else if (tsdata_x > ADJUST_COORDINATES_MAX && tsdata_y > ADJUST_COORDINATES_MAX)
 	{
-		//printk("\n down  left   \n");
-		val |= 	DOWN_KEY_0 | LEFT_KEY_0;
-	} else if (((tsdata_x >= 0) && (tsdata_x < (ADJUST_VALUE)))  &&  (tsdata_y >= 0 && tsdata_y < ADJUST_VALUE ))
+	    //printk("\n down  left   \n");
+	    val |= 	DOWN_KEY_0 | LEFT_KEY_0;
+	} else if (tsdata_x < ADJUST_COORDINATES_MIN && tsdata_y < ADJUST_COORDINATES_MIN)
 	{
-		//printk("\n up   right   \n");
-		val |= 	UP_KEY_0 | RIGHT_KEY_0;
-	} else if (((tsdata_x > 0) && (tsdata_x < (ADJUST_VALUE)))  &&  (tsdata_y >= (MAX_VALUE - ADJUST_VALUE) && tsdata_y < MAX_VALUE ))
+	    //printk("\n up   right   \n");
+	    val |= 	UP_KEY_0 | RIGHT_KEY_0;
+	} else if (tsdata_x < ADJUST_COORDINATES_MIN && tsdata_y > ADJUST_COORDINATES_MAX)
 	{
-		//printk("\n down   right   \n");
-		val |= 	DOWN_KEY_0 | RIGHT_KEY_0;
-	} else 	if (((tsdata_x > (MID_VALUE-ADJUST_VALUE)) && (tsdata_x < (MID_VALUE+ADJUST_VALUE)))  &&  (tsdata_y >= 0 && tsdata_y < ADJUST_VALUE ))
+	    //printk("\n down   right   \n");
+	    val |= 	DOWN_KEY_0 | RIGHT_KEY_0;
+	} else 	if (tsdata_x >= ADJUST_COORDINATES_MIN && tsdata_x <= ADJUST_COORDINATES_MAX && tsdata_y < ADJUST_COORDINATES_MIN)
 	{
-		val |= 	UP_KEY_0;
-	}else if (((tsdata_x > (MID_VALUE-ADJUST_VALUE)) && (tsdata_x < (MID_VALUE+ADJUST_VALUE)))  &&  (tsdata_y > (MAX_VALUE - ADJUST_VALUE) && tsdata_y < MAX_VALUE ))
+	    val |= 	UP_KEY_0;
+	} else if (tsdata_x >= ADJUST_COORDINATES_MIN && tsdata_x <= ADJUST_COORDINATES_MAX && tsdata_y > ADJUST_COORDINATES_MAX)
 	{
-		val |= 	DOWN_KEY_0;
-	}else if (((tsdata_x > (MAX_VALUE-ADJUST_VALUE)) && (tsdata_x < MAX_VALUE))  &&  (tsdata_y > (MID_VALUE - ADJUST_VALUE) && tsdata_y < (MID_VALUE + ADJUST_VALUE) ))
+	    val |= 	DOWN_KEY_0;
+	} else if (tsdata_y >= ADJUST_COORDINATES_MIN && tsdata_y <= ADJUST_COORDINATES_MAX && tsdata_x > ADJUST_COORDINATES_MAX)
 	{
-		val |= 	LEFT_KEY_0;
-	}else if (((tsdata_x >= 0) && (tsdata_x < ADJUST_VALUE))  &&  (tsdata_y > (MID_VALUE - ADJUST_VALUE) && tsdata_y < (MID_VALUE + ADJUST_VALUE )))
+	    val |= 	LEFT_KEY_0;
+	} else if (tsdata_y >= ADJUST_COORDINATES_MIN && tsdata_y <= ADJUST_COORDINATES_MAX && tsdata_x < ADJUST_COORDINATES_MIN)
 	{
-		val |= 	RIGHT_KEY_0;
-	}else
-		val = 0;
+	    val |= 	RIGHT_KEY_0;
+	} else
+	    val = 0;
 
 	ts_key_data = val;
 }

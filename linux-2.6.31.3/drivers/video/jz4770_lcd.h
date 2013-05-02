@@ -514,6 +514,7 @@ do { \
 #define LCD_SPI_CLK  (32*4+15)
 #define LCD_SPI_DT   (32*4+17)
 
+#if 0
 #define  __spi_write_byte(reg,data)   \
 do {                   \
 	int i,j;         \
@@ -562,7 +563,60 @@ do {                \
 	__spi_write_byte(0x1E,0x67);   \	
 	__spi_write_byte(0x20,0x00);    \
 }while(0)
+#else
+#define  __spi_write_byte(reg,data)   \
+do {                   \
+	int i,j;         \
+	unsigned short value = 0;  \
+	value = ((reg<<2) | 0x02) << 8;   \
+	value |= (data);    \
+	__gpio_clear_pin(LCD_SPI_EN);   \
+	for (i=0;i<16;i++){             \
+		__gpio_clear_pin(LCD_SPI_CLK);   \
+		udelay(500);                  \
+		j = value & 0x8000;         \
+		if (j == 0x8000){             \
+			__gpio_set_pin(LCD_SPI_DT);   \
+		}else{                              \
+			__gpio_clear_pin(LCD_SPI_DT);    \
+		}                     \
+		udelay(500);         \
+		__gpio_set_pin(LCD_SPI_CLK);    \
+		udelay(500);         \
+		value <<= 1;      \
+	}            \
+	__gpio_set_pin(LCD_SPI_EN);  \
+	udelay(2000);     \
+}while(0)
 
+//	__spi_write_byte(0x0e,0x75);   
+#define  __lcd_special_on()  \
+do {                \
+	printk("H350 LCD INIT!\n");     \
+	__spi_write_byte(0x00,0x07);           \
+	__spi_write_byte(0x01,0x00);           \
+	__spi_write_byte(0x02,0x13);     \
+	__spi_write_byte(0x03,0xcc);     \
+	__spi_write_byte(0x04,0x46);    \
+	__spi_write_byte(0x05,0x0d);   \
+	__spi_write_byte(0x06,0x00);   \
+	__spi_write_byte(0x07,0x02);    \
+	__spi_write_byte(0x08,0x08);   \
+	__spi_write_byte(0x09,0x40);      \        
+	__spi_write_byte(0x0a,0x88);   \
+	__spi_write_byte(0x0b,0x88);    \
+	__spi_write_byte(0x0c,0x20);    \
+	__spi_write_byte(0x0d,0x20);   \
+	__spi_write_byte(0x0e,0x6a);   \
+	__spi_write_byte(0x0f,0xa6);  \   
+	__spi_write_byte(0x10,0x04);  \
+	__spi_write_byte(0x11,0x24);   \
+	__spi_write_byte(0x12,0x24);   \
+	__spi_write_byte(0x1E,0x00);   \	
+	__spi_write_byte(0x20,0x00);    \
+}while(0)
+
+#endif
 #endif
 
 #if 0
